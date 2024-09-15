@@ -7,12 +7,12 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import Login from "./pages/Login";
-import TaskDetails from "./pages/TaskDetails";
+import Login from "./Pages/Login";
+import TaskDetails from "./Pages/TaskDetails";
 import Tasks from "./Pages/Tasks";
 import Trash from "./pages/Trash";
 import Users from "./pages/Users";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./Pages/dashboard";
 import { setOpenSidebar } from "./redux/slices/authSlice";
 
 function Layout() {
