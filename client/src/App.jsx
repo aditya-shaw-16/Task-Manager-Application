@@ -9,10 +9,10 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
 import TaskDetails from "./pages/TaskDetails";
-import Tasks from "./pages/Tasks";
+import Tasks from "./Pages/Tasks";
 import Trash from "./pages/Trash";
 import Users from "./pages/Users";
-import Dashboard from "./Pages/Dashboard";
+import Dashboard from "./pages/dashboard";
 import { setOpenSidebar } from "./redux/slices/authSlice";
 
 function Layout() {
