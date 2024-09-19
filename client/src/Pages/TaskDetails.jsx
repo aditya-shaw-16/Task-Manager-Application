@@ -15,10 +15,10 @@ import { RxActivityLog } from "react-icons/rx";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { tasks } from "../assets/data";
-import Tabs from "../components/Tabs";
+import Tabs from "../Components/Tabs";
 import { PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils";
-import Loading from "../components/Loader";
-import Button from "../components/Button";
+import Loading from "../Components/Loader";
+import Button from "../Components/Button";
 
 const assets = [
   "https://images.pexels.com/photos/2418664/pexels-photo-2418664.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
