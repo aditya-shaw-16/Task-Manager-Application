@@ -1,5 +1,5 @@
 import express from "express";
-import { isAdminRoute, protectRoute } from "../middlewares/authMiddlewares";
+import { isAdminRoute, protectRoute } from "../middlewares/authMiddlewares.js";
 import { createSubTask, 
   createTask, 
   dashboardStatistics, 
