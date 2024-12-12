@@ -1,41 +1,46 @@
-import jwt from "jsonwebtoken"
-import User from "../models/user.js"
-const protectRoute = async(req, res, next) => {
-    try{
-        let token = req.cookie.token;
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
 
-        if(token){
-            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+const protectRoute = async (req, res, next) => {
+  try {
+    let token = req.cookies?.token;
 
-            const resp = await User.findById(decodedToken.userId).select(
-                "isAdmin email"
-            );
+    if (token) {
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
-            req.user = {
-                email: resp.email,
-                isAdmin: resp.isAdmin,
-                userId: decodedToken.userId,
-            };
+      const resp = await User.findById(decodedToken.userId).select(
+        "isAdmin email"
+      );
 
-            next();
-        }
-    } catch(error){
-        console.log(error);
-        return res
-            .status[401]
-            .json({status: false, message: "Not authorised. Try loging Again."});
-    }
-};
+      req.user = {
+        email: resp.email,
+        isAdmin: resp.isAdmin,
+        userId: decodedToken.userId,
+      };
 
-const isAdminRoute = (req,res, next) => {
-    if(req.user && req.user.isAdmin){
-        next();
+      next();
     } else {
-        return res.status(401).json({
-            status: false,
-            message: "You are not an admin. Try logging in with admin credentials",
-        });
+      return res
+        .status(401)
+        .json({ status: false, message: "Not authorized. Try login again." });
     }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(401)
+      .json({ status: false, message: "Not authorized. Try login again." });
+  }
 };
 
-export {isAdminRoute, protectRoute};
+const isAdminRoute = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    return res.status(401).json({
+      status: false,
+      message: "Not authorized as admin. Try login as admin.",
+    });
+  }
+};
+
+export { isAdminRoute, protectRoute };

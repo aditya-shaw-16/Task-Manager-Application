@@ -1,5 +1,5 @@
 import Notice from "../models/notification.js";
-import Task from "../models/tasks.js";
+import Task from "../models/task.js";
 import User from "../models/user.js";
 
 export const createTask = async (req, res) => {
