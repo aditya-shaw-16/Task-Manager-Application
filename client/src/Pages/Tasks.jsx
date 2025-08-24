@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { FaList } from "react-icons/fa";
 import { MdGridView } from "react-icons/md";
 import { useParams } from "react-router-dom";
-import Loading from "../components/Loader";
-import Title from "../components/Title";
-import Button from "../components/Button";
+import Loading from "../compo/Loader";
+import Title from "../compo/Title";
+import Button from "../compo/Button";
 import { IoMdAdd } from "react-icons/io";
-import Tabs from "../components/Tabs";
-import TaskTitle from "../components/TaskTitle";
-import BoardView from "../components/BoardView";
+import Tabs from "../compo/Tabs";
+import TaskTitle from "../compo/TaskTitle";
+import BoardView from "../compo/BoardView";
 import { tasks } from "../assets/data";
-import Table from "../components/task/Table";
-import AddTask from "../components/task/AddTask";
+import Table from "../compo/task/Table";
+import AddTask from "../compo/task/AddTask";
 
 const TABS = [
   { title: "Board View", icon: <MdGridView /> },

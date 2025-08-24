@@ -5,15 +5,16 @@ import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
+import Navbar from "./compo/Navbar";
+import Sidebar from "./compo/Sidebar";
 import Login from "./Pages/Login";
-import TaskDetails from "./Pages/TaskDetails";
+import TaskDetails from "./pages/TaskDetails";
 import Tasks from "./Pages/Tasks";
 import Trash from "./pages/Trash";
 import Users from "./pages/Users";
 import Dashboard from "./Pages/dashboard";
-import { setOpenSidebar } from "./redux/slices/authSlice";
+// import { setOpenSidebar } from "./slices/authSlice"
+import  setOpenSidebar from "./redux/slices/authSlice";
 
 function Layout() {
   const { user } = useSelector((state) => state.auth);

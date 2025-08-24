@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import Textbox from "../components/Textbox";
-import Button from "../components/Button";
+import Textbox from "../compo/Textbox";
+import Button from "../compo/Button";
 import { useSelector } from "react-redux";
 
 const Login = () => {
@@ -54,7 +54,7 @@ const Login = () => {
                 Welcome back!
               </p>
               <p className='text-center text-base text-gray-700 '>
-                Keep all your credential safge.
+                Keep all your credential safe.
               </p>
             </div>
 

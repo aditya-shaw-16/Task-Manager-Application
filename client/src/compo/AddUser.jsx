@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 import ModalWrapper from "./ModalWrapper";
 import { Dialog } from "@headlessui/react";
 import Textbox from "./Textbox";
-import Loading from "./Loader";
 import Button from "./Button";
+// import Loading from "Loader";
+import Loading from "./Loader";
 
 const AddUser = ({ open, setOpen, userData }) => {
   let defaultValues = userData ?? {};

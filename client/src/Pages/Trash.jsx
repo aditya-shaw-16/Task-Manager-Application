@@ -8,11 +8,11 @@ import {
   MdOutlineRestore,
 } from "react-icons/md";
 import { tasks } from "../assets/data";
-import Title from "../components/Title";
-import Button from "../components/Button";
+import Title from "../compo/Title";
+import Button from "../compo/Button";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
-import AddUser from "../components/AddUser";
-import ConfirmatioDialog from "../components/Dialogs";
+import AddUser from "../compo/AddUser";
+import ConfirmatioDialog from "../compo/Dialogs";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,

@@ -11,9 +11,9 @@ import { FaArrowsToDot } from "react-icons/fa6";
 import moment from "moment";
 import { summary } from "../assets/data";
 import clsx from "clsx";
-import { Chart } from "../components/Chart";
+import { Chart } from "../compo/Chart";
 import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils";
-import UserInfo from "../components/UserInfo";
+import UserInfo from "../compo/UserInfo";
 
 const TaskTable = ({ tasks }) => {
   const ICONS = {
