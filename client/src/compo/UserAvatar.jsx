@@ -4,17 +4,28 @@ import { FaUser, FaUserLock } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getInitials } from "../utils";
+import { getInitials } from "../Utils";
+import { useLogoutMutation } from "../redux/slices/apiSlice";
+import { logout } from "../redux/slices/authSlice";
+import { toast } from "sonner";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 const UserAvatar = () => {
-  const [open, setOpen] = useState(false);
   const [openPassword, setOpenPassword] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [logoutMutation] = useLogoutMutation();
 
-  const logoutHandler = () => {
-    console.log("logout");
+  const logoutHandler = async () => {
+    try {
+      await logoutMutation().unwrap();
+      dispatch(logout());
+      toast.success("Logged out successfully");
+      navigate("/log-in");
+    } catch (error) {
+      toast.error(error?.data?.message || "Logout failed");
+    }
   };
 
   return (
@@ -43,7 +54,7 @@ const UserAvatar = () => {
                 <Menu.Item>
                   {({ active }) => (
                     <button
-                      onClick={() => setOpen(true)}
+                      onClick={() => navigate("/profile")}
                       className='text-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base'
                     >
                       <FaUser className='mr-2' aria-hidden='true' />
@@ -80,6 +91,8 @@ const UserAvatar = () => {
           </Transition>
         </Menu>
       </div>
+
+      <ChangePasswordDialog open={openPassword} setOpen={setOpenPassword} />
     </>
   );
 };

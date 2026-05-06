@@ -9,9 +9,9 @@ import { IoMdAdd } from "react-icons/io";
 import Tabs from "../compo/Tabs";
 import TaskTitle from "../compo/TaskTitle";
 import BoardView from "../compo/BoardView";
-import { tasks } from "../assets/data";
 import Table from "../compo/task/Table";
 import AddTask from "../compo/task/AddTask";
+import { useGetTasksQuery } from "../redux/slices/apiSlice";
 
 const TABS = [
   { title: "Board View", icon: <MdGridView /> },
@@ -29,11 +29,14 @@ const Tasks = () => {
 
   const [selected, setSelected] = useState(0);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const status = params?.status || "";
+  const normalizedStatus = status.replace("-", " ");
+  const { data, isLoading } = useGetTasksQuery(
+    status ? { stage: normalizedStatus } : {}
+  );
+  const tasks = data?.tasks || [];
 
-  return loading ? (
+  return isLoading ? (
     <div className='py-10'>
       <Loading />
     </div>

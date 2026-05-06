@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalWrapper from "../ModalWrapper";
 import { Dialog } from "@headlessui/react";
 import Textbox from "../Textbox";
@@ -7,32 +7,73 @@ import UserList from "./UserList";
 import SelectList from "../SelectList";
 import { BiImages } from "react-icons/bi";
 import Button from "../Button";
+import Loading from "../Loader";
+import { toast } from "sonner";
+import { useCreateTaskMutation, useUpdateTaskMutation } from "../../redux/slices/apiSlice";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 
-const uploadedFileURLs = [];
-
-const AddTask = ({ open, setOpen }) => {
-  const task = "";
-
+const AddTask = ({ open, setOpen, task = null }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
-  const [team, setTeam] = useState(task?.team || []);
-  const [stage, setStage] = useState(task?.stage?.toUpperCase() || LISTS[0]);
-  const [priority, setPriority] = useState(
-    task?.priority?.toUpperCase() || PRIORIRY[2]
-  );
+  const [team, setTeam] = useState([]);
+  const [stage, setStage] = useState(LISTS[0]);
+  const [priority, setPriority] = useState(PRIORIRY[2]);
   const [assets, setAssets] = useState([]);
-  const [uploading, setUploading] = useState(false);
+  const [createTaskMutation, { isLoading: isCreating }] = useCreateTaskMutation();
+  const [updateTaskMutation, { isLoading: isUpdating }] = useUpdateTaskMutation();
+  const isLoading = isCreating || isUpdating;
 
-  const submitHandler = () => {};
+  useEffect(() => {
+    if (task && open) {
+      // Pre-fill form for editing
+      reset({ title: task.title, date: task.date?.split('T')[0] || '' });
+      setTeam(task.team || []);
+      setStage(task.stage?.toUpperCase() || LISTS[0]);
+      setPriority(task.priority?.toUpperCase() || PRIORIRY[2]);
+      setAssets(task.assets || []);
+    } else if (open) {
+      // Reset for new task
+      reset({ title: '', date: '' });
+      setTeam([]);
+      setStage(LISTS[0]);
+      setPriority(PRIORIRY[2]);
+      setAssets([]);
+    }
+  }, [open, task, reset]);
+
+  const submitHandler = async (data) => {
+    try {
+      const payload = {
+        ...data,
+        team,
+        stage: stage.toLowerCase(),
+        priority: priority.toLowerCase(),
+        assets,
+      };
+
+      if (task?._id) {
+        // Update existing task
+        await updateTaskMutation({ id: task._id, ...payload }).unwrap();
+        toast.success("Task updated successfully");
+      } else {
+        // Create new task
+        await createTaskMutation(payload).unwrap();
+        toast.success("Task created successfully");
+      }
+      setOpen(false);
+    } catch (error) {
+      toast.error(error?.data?.message || error?.message || "Failed to save task");
+    }
+  };
 
   const handleSelect = (e) => {
-    setAssets(e.target.files);
+    setAssets(Array.from(e.target.files || []).map((file) => URL.createObjectURL(file)));
   };
 
   return (
@@ -43,7 +84,7 @@ const AddTask = ({ open, setOpen }) => {
             as='h2'
             className='text-base font-bold leading-6 text-gray-900 mb-4'
           >
-            {task ? "UPDATE TASK" : "ADD TASK"}
+            {task?._id ? "UPDATE TASK" : "ADD TASK"}
           </Dialog.Title>
 
           <div className='mt-2 flex flex-col gap-6'>
@@ -110,10 +151,10 @@ const AddTask = ({ open, setOpen }) => {
             </div>
 
             <div className='bg-gray-50 py-6 sm:flex sm:flex-row-reverse gap-4'>
-              {uploading ? (
-                <span className='text-sm py-2 text-red-500'>
-                  Uploading assets
-                </span>
+              {isLoading ? (
+                <div className='py-2'>
+                  <Loading />
+                </div>
               ) : (
                 <Button
                   label='Submit'

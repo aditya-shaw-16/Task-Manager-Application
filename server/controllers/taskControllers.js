@@ -32,7 +32,7 @@ export const createTask = async (req, res) => {
       date,
       priority: priority.toLowerCase(),
       assets,
-      activities: activity,
+      activities: [activity],
     });
 
     await Notice.create({

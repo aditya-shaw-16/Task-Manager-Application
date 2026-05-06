@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import Title from "../compo/Title";
 import Button from "../compo/Button";
 import { IoMdAdd } from "react-icons/io";
-import { summary } from "../assets/data";
-import { getInitials } from "../utils";
+import { getInitials } from "../Utils";
 import clsx from "clsx";
 import ConfirmatioDialog, { UserAction } from "../compo/Dialogs";
 import AddUser from "../compo/AddUser";
+import Loading from "../compo/Loader";
+import { useGetUsersQuery } from "../redux/slices/apiSlice";
 
 const Users = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [open, setOpen] = useState(false);
   const [openAction, setOpenAction] = useState(false);
   const [selected, setSelected] = useState(null);
+  const { data, isLoading } = useGetUsersQuery();
+  const users = data || [];
 
   const userActionHandler = () => {};
   const deleteHandler = () => {};
@@ -100,16 +103,22 @@ const Users = () => {
         </div>
 
         <div className='bg-white px-2 md:px-4 py-4 shadow-md rounded'>
-          <div className='overflow-x-auto'>
+          {isLoading ? (
+            <div className='py-10'>
+              <Loading />
+            </div>
+          ) : (
+            <div className='overflow-x-auto'>
             <table className='w-full mb-5'>
               <TableHeader />
               <tbody>
-                {summary.users?.map((user, index) => (
+                {users?.map((user, index) => (
                   <TableRow key={index} user={user} />
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Textbox from "../compo/Textbox";
 import Button from "../compo/Button";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../redux/slices/authSlice";
+import { toast } from "sonner";
 
 const Login = () => {
   const { user } = useSelector((state) => state.auth);
@@ -14,9 +17,32 @@ const Login = () => {
   } = useForm();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const submitHandler = async (data) => {
-    console.log("submit");
+    try {
+      const response = await fetch("http://localhost:8800/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result?.message || "Login failed");
+        return;
+      }
+
+      dispatch(setCredentials(result));
+      toast.success("Logged in successfully");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error?.message || "Login failed");
+    }
   };
 
   useEffect(() => {

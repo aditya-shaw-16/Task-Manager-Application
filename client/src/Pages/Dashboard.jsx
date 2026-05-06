@@ -9,11 +9,12 @@ import { LuClipboardEdit } from "react-icons/lu";
 import { FaNewspaper, FaUsers } from "react-icons/fa";
 import { FaArrowsToDot } from "react-icons/fa6";
 import moment from "moment";
-import { summary } from "../assets/data";
 import clsx from "clsx";
 import { Chart } from "../compo/Chart";
-import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils";
+import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../Utils";
 import UserInfo from "../compo/UserInfo";
+import Loading from "../compo/Loader";
+import { useGetDashboardQuery } from "../redux/slices/apiSlice";
 
 const TaskTable = ({ tasks }) => {
   const ICONS = {
@@ -146,13 +147,17 @@ const UserTable = ({ users }) => {
   );
 };
 const Dashboard = () => {
-  const totals = summary.tasks;
+  const { data, isLoading } = useGetDashboardQuery();
+  const totals = data?.tasks || {};
+  const graphData = data?.graphData || [];
+  const last10Task = data?.last10Task || [];
+  const users = data?.users || [];
 
   const stats = [
     {
       _id: "1",
       label: "TOTAL TASK",
-      total: summary?.totalTasks || 0,
+      total: data?.totalTasks || 0,
       icon: <FaNewspaper />,
       bg: "bg-[#1d4ed8]",
     },
@@ -173,7 +178,7 @@ const Dashboard = () => {
     {
       _id: "4",
       label: "TODOS",
-      total: totals["todo"],
+      total: totals["todo"] || 0,
       icon: <FaArrowsToDot />,
       bg: "bg-[#be185d]" || 0,
     },
@@ -201,6 +206,11 @@ const Dashboard = () => {
   };
   return (
     <div className='h-full py-4'>
+      {isLoading ? (
+        <div className='py-10'>
+          <Loading />
+        </div>
+      ) : null}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-5'>
         {stats.map(({ icon, bg, label, total }, index) => (
           <Card key={index} icon={icon} bg={bg} label={label} count={total} />
@@ -211,17 +221,17 @@ const Dashboard = () => {
         <h4 className='text-xl text-gray-600 font-semibold'>
           Chart by Priority
         </h4>
-        <Chart />
+        <Chart data={graphData} />
       </div>
 
       <div className='w-full flex flex-col md:flex-row gap-4 2xl:gap-10 py-8'>
         {/* /left */}
 
-        <TaskTable tasks={summary.last10Task} />
+        <TaskTable tasks={last10Task} />
 
         {/* /right */}
 
-        <UserTable users={summary.users} />
+        <UserTable users={users} />
       </div>
     </div>
   );

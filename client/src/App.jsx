@@ -7,14 +7,14 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import Navbar from "./compo/Navbar";
 import Sidebar from "./compo/Sidebar";
-import Login from "./Pages/Login";
+import Login from "./pages/Login";
 import TaskDetails from "./pages/TaskDetails";
-import Tasks from "./Pages/Tasks";
+import Tasks from "./pages/Tasks";
 import Trash from "./pages/Trash";
 import Users from "./pages/Users";
-import Dashboard from "./Pages/dashboard";
-// import { setOpenSidebar } from "./slices/authSlice"
-import  setOpenSidebar from "./redux/slices/authSlice";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import { setOpenSidebar } from "./redux/slices/authSlice";
 
 function Layout() {
   const { user } = useSelector((state) => state.auth);
@@ -105,6 +105,7 @@ function App() {
           <Route path='/in-progress/:status' element={<Tasks />} />
           <Route path='/todo/:status' element={<Tasks />} />
           <Route path='/team' element={<Users />} />
+          <Route path='/profile' element={<Profile />} />
           <Route path='/trashed' element={<Trash />} />
           <Route path='/task/:id' element={<TaskDetails />} />
         </Route>

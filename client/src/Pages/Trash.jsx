@@ -7,12 +7,13 @@ import {
   MdKeyboardDoubleArrowUp,
   MdOutlineRestore,
 } from "react-icons/md";
-import { tasks } from "../assets/data";
 import Title from "../compo/Title";
 import Button from "../compo/Button";
-import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
+import { PRIOTITYSTYELS, TASK_TYPE } from "../Utils";
 import AddUser from "../compo/AddUser";
 import ConfirmatioDialog from "../compo/Dialogs";
+import Loading from "../compo/Loader";
+import { useGetTasksQuery } from "../redux/slices/apiSlice";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -26,6 +27,8 @@ const Trash = () => {
   const [msg, setMsg] = useState(null);
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
+  const { data, isLoading } = useGetTasksQuery({ isTrashed: true });
+  const tasks = data?.tasks || [];
 
   const deleteAllClick = () => {
     setType("deleteAll");
@@ -125,7 +128,12 @@ const Trash = () => {
           </div>
         </div>
         <div className='bg-white px-2 md:px-6 py-4 shadow-md rounded'>
-          <div className='overflow-x-auto'>
+          {isLoading ? (
+            <div className='py-10'>
+              <Loading />
+            </div>
+          ) : (
+            <div className='overflow-x-auto'>
             <table className='w-full mb-5'>
               <TableHeader />
               <tbody>
@@ -134,7 +142,8 @@ const Trash = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

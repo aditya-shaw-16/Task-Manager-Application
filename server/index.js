@@ -10,8 +10,6 @@ import routes from "./routes/index.js"
 
 dotenv.config()
 
-dbConnection()
-
 const PORT = process.env.PORT || 5000 
 
 const app = express();
@@ -19,8 +17,8 @@ const app = express();
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://localhost:3001"],
-        methods: ["GET","pOST", "PUT", "DELETE"],
-        Credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
     })
 );
 
@@ -34,4 +32,14 @@ app.use("/api", routes)
 app.use(routeNotFound);
 app.use(errorHandler);
 
-app.listen(PORT, ()=> console.log(`Server listening on ${PORT}`));
+const startServer = async () => {
+    try {
+        await dbConnection();
+        app.listen(PORT, ()=> console.log(`Server listening on ${PORT}`));
+    } catch (error) {
+        console.error("Failed to start server:", error);
+        process.exit(1);
+    }
+};
+
+startServer();

@@ -1,19 +1,20 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import ModalWrapper from "./ModalWrapper";
 import { Dialog } from "@headlessui/react";
 import Textbox from "./Textbox";
 import Button from "./Button";
-// import Loading from "Loader";
 import Loading from "./Loader";
+import { toast } from "sonner";
+import {
+  useRegisterUserMutation,
+  useUpdateUserProfileMutation,
+} from "../redux/slices/apiSlice";
 
 const AddUser = ({ open, setOpen, userData }) => {
   let defaultValues = userData ?? {};
-  const { user } = useSelector((state) => state.auth);
-
-  const isLoading = false,
-    isUpdating = false;
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const [updateUserProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
 
   const {
     register,
@@ -21,7 +22,21 @@ const AddUser = ({ open, setOpen, userData }) => {
     formState: { errors },
   } = useForm({ defaultValues });
 
-  const handleOnSubmit = () => {};
+  const handleOnSubmit = async (data) => {
+    try {
+      if (userData?._id) {
+        await updateUserProfile({ ...data, _id: userData._id }).unwrap();
+        toast.success("Profile updated successfully");
+      } else {
+        await registerUser({ ...data, isAdmin: false }).unwrap();
+        toast.success("User created successfully");
+      }
+
+      setOpen(false);
+    } catch (error) {
+      toast.error(error?.data?.message || error?.message || "Request failed");
+    }
+  };
 
   return (
     <>
@@ -79,6 +94,20 @@ const AddUser = ({ open, setOpen, userData }) => {
               })}
               error={errors.role ? errors.role.message : ""}
             />
+
+            {!userData ? (
+              <Textbox
+                placeholder='Temporary password'
+                type='password'
+                name='password'
+                label='Password'
+                className='w-full rounded'
+                register={register("password", {
+                  required: "Password is required!",
+                })}
+                error={errors.password ? errors.password.message : ""}
+              />
+            ) : null}
           </div>
 
           {isLoading || isUpdating ? (
