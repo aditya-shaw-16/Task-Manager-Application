@@ -2,7 +2,7 @@
 
 
 
-# Overview
+## Overview
 The Cloud-Based Task Manager is a web application designed to streamline team task management. Built using the MERN stack (MongoDB, Express.js, React, and Node.js), this platform provides a user-friendly interface for efficient task assignment, tracking, and collaboration. The application caters to administrators and regular users, offering comprehensive features to enhance productivity and organization.
 
 
@@ -16,7 +16,6 @@ In a dynamic work environment, effective task management is crucial for team suc
 With the rise of remote work and dispersed teams, there is a growing need for tools that facilitate effective communication and task coordination. The Cloud-Based Task Manager addresses this need by leveraging modern web technologies to create an intuitive and responsive task management solution. The MERN stack ensures scalability, while the integration of Redux Toolkit, Headless UI, and Tailwind CSS enhances user experience and performance.
 
 
-### 
 ## **Admin Features:**
 1. **User Management:**
     - Create admin accounts.
