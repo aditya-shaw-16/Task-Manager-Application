@@ -41,6 +41,38 @@ export const formatDate = (date) => {
 
       return initialsStr || "U";
   }
+
+export const applyThemePreference = (themePreference) => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const shouldUseDark =
+    themePreference === "dark" ||
+    (themePreference === "system" && systemPrefersDark);
+
+  document.documentElement.classList.toggle("dark", shouldUseDark);
+  document.body.classList.toggle("dark", shouldUseDark);
+  document.documentElement.dataset.theme = shouldUseDark ? "dark" : "light";
+  document.documentElement.style.colorScheme = shouldUseDark ? "dark" : "light";
+};
+
+export const getResolvedTheme = (themePreference) => {
+  if (themePreference === "dark") {
+    return "dark";
+  }
+
+  if (themePreference === "light") {
+    return "light";
+  }
+
+  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+
+  return "light";
+};
   
   export const PRIOTITYSTYELS = {
     high: "text-red-600",

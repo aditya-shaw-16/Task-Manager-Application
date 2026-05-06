@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Textbox from "../compo/Textbox";
@@ -7,13 +7,21 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import { toast } from "sonner";
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+} from "../redux/slices/apiSlice";
 
 const Login = () => {
   const { user } = useSelector((state) => state.auth);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [loginUser, { isLoading: isLoggingIn }] = useLoginUserMutation();
+  const [registerUser, { isLoading: isRegisteringUser }] = useRegisterUserMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const navigate = useNavigate();
@@ -21,33 +29,52 @@ const Login = () => {
 
   const submitHandler = async (data) => {
     try {
-      const response = await fetch("http://localhost:8800/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      if (isRegistering) {
+        if (data.password !== data.confirmPassword) {
+          toast.error("Passwords do not match");
+          return;
+        }
 
-      const result = await response.json();
+        await registerUser({
+          name: data.name,
+          title: data.title,
+          role: data.role,
+          email: data.email,
+          password: data.password,
+          isAdmin: false,
+        }).unwrap();
 
-      if (!response.ok) {
-        toast.error(result?.message || "Login failed");
+        const loggedInUser = await loginUser({
+          email: data.email,
+          password: data.password,
+        }).unwrap();
+
+        dispatch(setCredentials(loggedInUser));
+        toast.success("Account created successfully");
+        navigate("/dashboard");
         return;
       }
+
+      const result = await loginUser({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
 
       dispatch(setCredentials(result));
       toast.success("Logged in successfully");
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error?.message || "Login failed");
+      toast.error(error?.data?.message || error?.message || "Request failed");
     }
   };
 
   useEffect(() => {
     user && navigate("/dashboard");
   }, [user]);
+
+  useEffect(() => {
+    reset();
+  }, [isRegistering, reset]);
 
   return (
     <div className='w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6]'>
@@ -73,18 +100,58 @@ const Login = () => {
         <div className='w-full md:w-1/3 p-4 md:p-1 flex flex-col justify-center items-center'>
           <form
             onSubmit={handleSubmit(submitHandler)}
-            className='form-container w-full md:w-[400px] flex flex-col gap-y-8 bg-white px-10 pt-14 pb-14'
+            className='form-container w-full md:w-[440px] flex flex-col gap-y-8 bg-white px-10 pt-14 pb-14'
           >
             <div className=''>
               <p className='text-blue-600 text-3xl font-bold text-center'>
-                Welcome back!
+                {isRegistering ? "Create account" : "Welcome back!"}
               </p>
               <p className='text-center text-base text-gray-700 '>
-                Keep all your credential safe.
+                {isRegistering
+                  ? "Enter the details below to register a new user."
+                  : "Keep all your credentials safe."}
               </p>
             </div>
 
             <div className='flex flex-col gap-y-5'>
+              {isRegistering ? (
+                <>
+                  <Textbox
+                    placeholder='Full name'
+                    type='text'
+                    name='name'
+                    label='Full Name' 
+                    className='w-full rounded-full'
+                    register={register("name", {
+                      required: "Full name is required!",
+                    })}
+                    error={errors.name ? errors.name.message : ""}
+                  />
+                  <Textbox
+                    placeholder='Job title'
+                    type='text'
+                    name='title'
+                    label='Title'
+                    className='w-full rounded-full'
+                    register={register("title", {
+                      required: "Title is required!",
+                    })}
+                    error={errors.title ? errors.title.message : ""}
+                  />
+                  <Textbox
+                    placeholder='Role'
+                    type='text'
+                    name='role'
+                    label='Role'
+                    className='w-full rounded-full'
+                    register={register("role", {
+                      required: "Role is required!",
+                    })}
+                    error={errors.role ? errors.role.message : ""}
+                  />
+                </>
+              ) : null}
+
               <Textbox
                 placeholder='email@example.com'
                 type='email'
@@ -108,15 +175,49 @@ const Login = () => {
                 error={errors.password ? errors.password.message : ""}
               />
 
-              <span className='text-sm text-gray-500 hover:text-blue-600 hover:underline cursor-pointer'>
-                Forget Password?
-              </span>
+              {isRegistering ? (
+                <Textbox
+                  placeholder='confirm your password'
+                  type='password'
+                  name='confirmPassword'
+                  label='Confirm Password'
+                  className='w-full rounded-full'
+                  register={register("confirmPassword", {
+                    required: "Please confirm your password!",
+                  })}
+                  error={errors.confirmPassword ? errors.confirmPassword.message : ""}
+                />
+              ) : null}
+
+              {!isRegistering ? (
+                <span className='text-sm text-gray-500 hover:text-blue-600 hover:underline cursor-pointer'>
+                  Forget Password?
+                </span>
+              ) : null}
 
               <Button
                 type='submit'
-                label='Submit'
+                label={
+                  isRegistering
+                    ? isRegisteringUser
+                      ? "Creating..."
+                      : "Create Account"
+                    : isLoggingIn
+                    ? "Signing In..."
+                    : "Submit"
+                }
                 className='w-full h-10 bg-blue-700 text-white rounded-full'
               />
+
+              <button
+                type='button'
+                onClick={() => setIsRegistering((current) => !current)}
+                className='text-sm text-blue-700 hover:underline text-center'
+              >
+                {isRegistering
+                  ? "Already have an account? Log in"
+                  : "New here? Create a new user"}
+              </button>
             </div>
           </form>
         </div>

@@ -2,7 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
+    ? (() => {
+        const storedUser = JSON.parse(localStorage.getItem("userInfo"));
+        if (!storedUser) {
+          return null;
+        }
+
+        const { profilePic, ...sanitizedUser } = storedUser;
+        return sanitizedUser;
+      })()
     : null,
 
   isSidebarOpen: false,
@@ -13,8 +21,9 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.user = action.payload;
-      localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      const { profilePic, ...sanitizedUser } = action.payload || {};
+      state.user = sanitizedUser;
+      localStorage.setItem("userInfo", JSON.stringify(sanitizedUser));
     },
     logout: (state, action) => {
       state.user = null;

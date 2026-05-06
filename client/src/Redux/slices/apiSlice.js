@@ -57,6 +57,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["User", "Dashboard"],
     }),
+    loginUser: builder.mutation({
+      query: (body) => ({
+        url: "/user/login",
+        method: "POST",
+        body,
+      }),
+    }),
     updateUserProfile: builder.mutation({
       query: (body) => ({
         url: "/user/profile",
@@ -90,6 +97,7 @@ export const {
   useUpdateTaskMutation,
   useGetUsersQuery,
   useRegisterUserMutation,
+  useLoginUserMutation,
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
   useLogoutMutation,

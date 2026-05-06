@@ -19,6 +19,7 @@ const ChangePasswordDialog = ({ open, setOpen }) => {
     watch,
   } = useForm({
     defaultValues: {
+      currentPassword: "",
       password: "",
       confirmPassword: "",
     },
@@ -34,6 +35,7 @@ const ChangePasswordDialog = ({ open, setOpen }) => {
       }
 
       await changePassword({
+        currentPassword: data.currentPassword,
         password: data.password,
       }).unwrap();
 
@@ -53,6 +55,18 @@ const ChangePasswordDialog = ({ open, setOpen }) => {
         </Dialog.Title>
 
         <div className='mt-2 flex flex-col gap-6'>
+          <Textbox
+            placeholder='Current Password'
+            type='password'
+            name='currentPassword'
+            label='Current Password'
+            className='w-full rounded'
+            register={register("currentPassword", {
+              required: "Current password is required!",
+            })}
+            error={errors.currentPassword ? errors.currentPassword.message : ""}
+          />
+
           <Textbox
             placeholder='New Password'
             type='password'

@@ -15,6 +15,7 @@ import Users from "./pages/Users";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import { setOpenSidebar } from "./redux/slices/authSlice";
+import ThemeManager from "./compo/ThemeManager";
 
 function Layout() {
   const { user } = useSelector((state) => state.auth);
@@ -23,7 +24,7 @@ function Layout() {
 
   return user ? (
     <div className='w-full h-screen flex flex-col md:flex-row'>
-      <div className='w-1/5 h-screen bg-white sticky top-0 hidden md:block'>
+      <div className='w-1/5 h-screen bg-white dark:bg-slate-900 sticky top-0 hidden md:block transition-colors'>
         <Sidebar />
       </div>
 
@@ -72,7 +73,7 @@ const MobileSidebar = () => {
             )}
             onClick={() => closeSidebar()}
           >
-            <div className='bg-white w-3/4 h-full'>
+            <div className='bg-white dark:bg-slate-900 w-3/4 h-full transition-colors'>
               <div className='w-full flex justify-end px-5 mt-5'>
                 <button
                   onClick={() => closeSidebar()}
@@ -95,7 +96,8 @@ const MobileSidebar = () => {
 
 function App() {
   return (
-    <main className='w-full min-h-screen bg-[#f3f4f6] '>
+    <main className='w-full min-h-screen bg-[#f3f4f6] dark:bg-slate-950 dark:text-slate-100 transition-colors'>
+      <ThemeManager />
       <Routes>
         <Route element={<Layout />}>
           <Route index path='/' element={<Navigate to='/dashboard' />} />

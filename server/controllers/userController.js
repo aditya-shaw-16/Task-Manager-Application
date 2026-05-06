@@ -84,6 +84,8 @@ export const logoutUser = async (req, res) => {
   try {
     res.cookie("token", "", {
       httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
       expires: new Date(0),
     });
 
@@ -96,7 +98,7 @@ export const logoutUser = async (req, res) => {
 
 export const getTeamList = async (req, res) => {
   try {
-    const users = await User.find().select("name title role email isActive");
+  const users = await User.find().select("name title role email isActive");
 
     res.status(200).json(users);
   } catch (error) {
@@ -141,8 +143,7 @@ export const updateUserProfile = async (req, res) => {
       user.role = req.body.role || user.role;
 
       const updatedUser = await user.save();
-
-      user.password = undefined;
+      updatedUser.password = undefined;
 
       res.status(201).json({
         status: true,
@@ -188,23 +189,32 @@ export const markNotificationRead = async (req, res) => {
 export const changeUserPassword = async (req, res) => {
   try {
     const { userId } = req.user;
+    const { currentPassword, password } = req.body;
 
     const user = await User.findById(userId);
 
-    if (user) {
-      user.password = req.body.password;
-
-      await user.save();
-
-      user.password = undefined;
-
-      res.status(201).json({
-        status: true,
-        message: `Password chnaged successfully.`,
-      });
-    } else {
-      res.status(404).json({ status: false, message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
     }
+
+    // Verify current password
+    const isMatch = await user.matchPassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(401).json({ status: false, message: "Current password is incorrect" });
+    }
+
+    // Update to new password
+    user.password = password;
+
+    await user.save();
+
+    user.password = undefined;
+
+    res.status(201).json({
+      status: true,
+      message: "Password changed successfully.",
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: error.message });
