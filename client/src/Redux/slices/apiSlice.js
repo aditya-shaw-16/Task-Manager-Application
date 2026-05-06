@@ -1,6 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const API_URI = import.meta.env.VITE_API_URL || "http://localhost:8800/api";
+const getApiUrl = () => {
+  if (import.meta.env.DEV) {
+    return import.meta.env.VITE_API_URL || "http://localhost:8800/api";
+  }
+
+  if (!import.meta.env.VITE_API_URL) {
+    throw new Error("VITE_API_URL is required in production.");
+  }
+
+  return import.meta.env.VITE_API_URL;
+};
+
+const API_URI = getApiUrl();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URI,
